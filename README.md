@@ -28,6 +28,11 @@ The Switchboard On-Demand service is currently deployed on the following network
 - Mainnet: [0x465e420630570b780bd8bfc25bfadf444e98594357c488fe397a1142a7b11ffa](https://explorer.movementlabs.xyz/object/0x465e420630570b780bd8bfc25bfadf444e98594357c488fe397a1142a7b11ffa/modules/packages/OnDemand?network=mainnet)
 - Testnet: [0x465e420630570b780bd8bfc25bfadf444e98594357c488fe397a1142a7b11ffa](https://explorer.movementlabs.xyz/object/0x465e420630570b780bd8bfc25bfadf444e98594357c488fe397a1142a7b11ffa/modules/packages/OnDemand?network=bardock+testnet)
 
+### Adapter Addresses
+
+- Mainnet: [0xb3654a69ba2a252849a89fa70845ad8e713a28c322dc580ae457df1f747bb74a](https://explorer.movementlabs.xyz/object/0xb3654a69ba2a252849a89fa70845ad8e713a28c322dc580ae457df1f747bb74a/modules/packages/Switchboard?network=mainnet)
+- Testnet: [0xfe38ecf6fc57e742327af6e951e9fe2fcadcd6d1f1327ba2bee5a31e43d6637f](https://explorer.movementlabs.xyz/object/0xfe38ecf6fc57e742327af6e951e9fe2fcadcd6d1f1327ba2bee5a31e43d6637f/modules/packages/Switchboard?network=bardock+testnet)
+
 ## Typescript-SDK Installation
 
 To use Switchboard On-Demand, add the following dependencies to your project:
@@ -140,7 +145,7 @@ const config = new AptosConfig({
 const aptos = new Aptos(config);
 
 // create a SwitchboardClient using the aptos client
-const client = new SwitchboardClient(aptos);
+const client = new SwitchboardClient(aptos, "movement"); // "bardock" for testnet
 
 // for initial testing and development, you can use the public
 // https://crossbar.switchboard.xyz instance of crossbar
@@ -241,17 +246,18 @@ const result = await aptos.waitForTransaction({
 console.log(result);
 ```
 
-## (optional) Using On-Demand with V2 interface 
+## (optional) Using On-Demand with V2 interface
 
 If you have existing code using the [Switchboard V2 interface](https://github.com/switchboard-xyz/sbv2-aptos), you can use the On-Demand adapter for full compatibility with the new On-Demand service.
 
 ### 1. Update Move.toml
 
-You'll need to update your `Move.toml` to include the new `switchboard` adapter address.
+You'll need to update your `Move.toml` to include the new `switchboard` adapter address. Pick the correct one for your target network.
 
 ```diff
 [addresses]
-+ switchboard = "0xb91d3fef0eeb4e685dc85e739c7d3e2968784945be4424e92e2f86e2418bf271"
++ switchboard = "0xb3654a69ba2a252849a89fa70845ad8e713a28c322dc580ae457df1f747bb74a" # mainnet
+# switchboard = "0xfe38ecf6fc57e742327af6e951e9fe2fcadcd6d1f1327ba2bee5a31e43d6637f" # testnet
 
 [dependencies]
 
@@ -281,7 +287,7 @@ const config = new AptosConfig({
 const aptos = new Aptos(config);
 
 // create a SwitchboardClient using the aptos client
-const client = new SwitchboardClient(aptos);
+const client = new SwitchboardClient(aptos, "movement"); // "bardock" for testnet
 
 const aggregator = new Aggregator(sb, aggregatorId);
 
