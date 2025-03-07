@@ -1,0 +1,18 @@
+[package]
+name = "Switchboard"
+version = "0.0.1"
+
+[addresses]
+std = '0x1'
+aptos_framework = '0x1'
+on_demand = "0x4fc1809ffb3c5ada6b4e885d4dbdbeb70cbdd99cbc0c8485965d95c2eab90935"
+switchboard = "_"
+
+[dev-addresses]
+switchboard = '0x55'
+
+[dependencies]
+MoveStdlib = { git = "https://github.com/aptos-labs/aptos-core.git", subdir = "aptos-move/framework/move-stdlib/", rev = "mainnet" }
+AptosFramework = { git = "https://github.com/aptos-labs/aptos-core.git", subdir = "aptos-move/framework/aptos-framework/", rev = "mainnet" }
+AptosStdlib = { git = "https://github.com/aptos-labs/aptos-core.git", subdir = "aptos-move/framework/aptos-stdlib/", rev = "mainnet" }
+OnDemand = { git = "https://github.com/switchboard-xyz/movement.git", rev = "main", subdir = "on_demand" }
