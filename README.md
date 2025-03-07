@@ -65,7 +65,7 @@ on_demand = "0x465e420630570b780bd8bfc25bfadf444e98594357c488fe397a1142a7b11ffa"
 
 # ...
 
-[dependencies.Switchboard]
+[dependencies.OnDemand]
 git = "https://github.com/switchboard-xyz/movement.git"
 subdir = "on_demand/"
 rev = "main"
