@@ -5,8 +5,8 @@ version = "0.0.1"
 [addresses]
 std = '0x1'
 aptos_framework = '0x1'
-on_demand = "0x4fc1809ffb3c5ada6b4e885d4dbdbeb70cbdd99cbc0c8485965d95c2eab90935"
-switchboard = "_"
+on_demand = "0x465e420630570b780bd8bfc25bfadf444e98594357c488fe397a1142a7b11ffa"
+switchboard = "0xb3654a69ba2a252849a89fa70845ad8e713a28c322dc580ae457df1f747bb74a"
 
 [dev-addresses]
 switchboard = '0x55'
