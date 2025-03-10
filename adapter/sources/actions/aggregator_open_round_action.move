@@ -1,4 +1,4 @@
-module switchboard_adapter::aggregator_open_round_action {
+module switchboard::aggregator_open_round_action {
     use std::vector;
     use std::option::{Self, Option};
 

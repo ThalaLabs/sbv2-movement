@@ -1,24 +1,24 @@
-module switchboard_adapter::aggregator {
+module switchboard::aggregator {
     use aptos_framework::account::{Self, SignerCapability};
     use aptos_framework::timestamp;
     use aptos_framework::block;
     use aptos_std::ed25519;
-    use switchboard_adapter::serialization;
-    use switchboard_adapter::math::{Self, SwitchboardDecimal};
-    use switchboard_adapter::vec_utils;
-    use switchboard_adapter::errors;
+    use switchboard::serialization;
+    use switchboard::math::{Self, SwitchboardDecimal};
+    use switchboard::vec_utils;
+    use switchboard::errors;
     use std::option::{Self, Option};
     use std::signer; 
     use std::vector;
     use std::coin::{Self, Coin};
 
     // New On-demand Dependencies
-    use switchboard::aggregator::{
+    use on_demand::aggregator::{
         Self as on_demand_aggregator, 
         Aggregator as OnDemandAggregator, 
         CurrentResult
     };
-    use switchboard::decimal::{Self, Decimal};
+    use on_demand::decimal::{Self, Decimal};
     use aptos_framework::object::{Self, Object};
     
     // Aggregator Round Data
