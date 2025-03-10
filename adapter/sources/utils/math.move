@@ -1,5 +1,5 @@
-module switchboard_adapter::math {
-    use switchboard_adapter::vec_utils;
+module switchboard::math {
+    use switchboard::vec_utils;
     use std::vector;
     use std::error;
 
