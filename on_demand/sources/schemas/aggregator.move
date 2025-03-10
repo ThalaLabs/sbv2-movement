@@ -734,7 +734,7 @@ module on_demand::aggregator {
         assert!(mean(&current_result) == decimal::new(expected_mean, false), err);
     }
 
-        #[test(account = @0x1)]
+    #[test(account = @0x1)]
     public fun test_aggregator_updates_small(account: signer) acquires Aggregator, UpdateState, CurrentResult {
         let err: u64 = 1337;
         let queue_address = example_queue_address();
@@ -770,4 +770,29 @@ module on_demand::aggregator {
         @0x1
     }
 
+    #[test_only]
+    public fun set_current_result(
+        aggregator: Object<Aggregator>,
+        result: Decimal,
+        timestamp: u64,
+        min_timestamp: u64,
+        max_timestamp: u64,
+        min_result: Decimal,
+        max_result: Decimal,
+        stdev: Decimal,
+        range: Decimal,
+        mean: Decimal,
+    ) acquires Aggregator, CurrentResult {
+        let aggregator_address = object::object_address(&aggregator);
+        let current_result = borrow_global_mut<CurrentResult>(aggregator_address);
+        current_result.result = result;
+        current_result.timestamp = timestamp;
+        current_result.min_timestamp = min_timestamp;
+        current_result.max_timestamp = max_timestamp;
+        current_result.min_result = min_result;
+        current_result.max_result = max_result;
+        current_result.stdev = stdev;
+        current_result.range = range;
+        current_result.mean = mean;
+    }
 }

@@ -597,6 +597,22 @@ module switchboard::aggregator {
 
     #[test_only]
     public entry fun new_test(account: &signer, value: u128, dec: u8, neg: bool) {
+
+        // Legacy create aggregator 
+
+        // build an on-demand aggregator
+        let aggregator_address = on_demand_aggregator::new_test(
+            account,
+            signer::address_of(account),
+            @0x0,
+            vector::empty(),
+            1,
+            1000000000,
+            1000000000,
+            1,
+        );
+
+
         let cap = account::create_test_signer_cap(signer::address_of(account));
         move_to(
             account, 
@@ -668,7 +684,7 @@ module switchboard::aggregator {
             std_deviation: math::zero(),
             min_response: math::zero(),
             max_response: math::zero(),
-            oracle_keys: vector::empty(),
+            oracle_keys: vector::singleton(aggregator_address), // <--- This is the aggregator object address
             medians: vector::empty(),
             errors_fulfilled: vector::empty(),
             num_error: 0,
@@ -687,20 +703,94 @@ module switchboard::aggregator {
             }
         );
         move_to(account, default_round<CurrentRound>());
+
     }
 
     #[test_only]
     public entry fun update_value(account: &signer, value: u128, dec: u8, neg: bool) acquires AggregatorRound {
-        borrow_global_mut<AggregatorRound<LatestConfirmedRound>>(signer::address_of(account)).result = math::new(value, dec, neg);
+        let round = borrow_global<AggregatorRound<LatestConfirmedRound>>(signer::address_of(account));
+
+        let aggregator_address = *vector::borrow(round.oracle_keys, 0);
+
+        // Get the aggregator object
+        let aggregator_object = object::address_to_object<OnDemandAggregator>(aggregator_address);
+
+        // get the v2 scaled value
+        let v2_result = math::new(value, dec, neg);
+        let (v2_value, v2_dec, v2_neg) = math::unpack(v2_result);
+
+        // set the on-demand result
+        on_demand_aggregator::set_current_result(
+            aggregator_object,
+            decimal::new(v2_value * 1000000000, v2_neg), // result
+            timestamp::now_seconds(), // median timestamp
+            timestamp::now_seconds(), // min_timestamp
+            timestamp::now_seconds(), // max_timestamp
+            decimal::new(v2_value * 1000000000, v2_neg), // min_result
+            decimal::new(v2_value * 1000000000, v2_neg), // max_result
+            decimal::zero(), // stdev
+            decimal::zero(), // range
+            decimal::new(value * 1000000000, neg), // mean
+        );
     }
 
     #[test_only]
     public entry fun update_open_timestamp(account: &signer, timestamp: u64) acquires AggregatorRound {
-        borrow_global_mut<AggregatorRound<LatestConfirmedRound>>(signer::address_of(account)).round_open_timestamp = timestamp;
+        let round = borrow_global<AggregatorRound<LatestConfirmedRound>>(signer::address_of(account));
+
+        let aggregator_address = *vector::borrow(round.oracle_keys, 0);
+
+        // Get the aggregator object
+        let aggregator_object = object::address_to_object<OnDemandAggregator>(aggregator_address);
+
+        // get the current result
+        let current_result: CurrentResult = on_demand_aggregator::current_result(aggregator_object);
+
+        // get the current result value
+        let result: Decimal = on_demand_aggregator::result(&current_result);
+
+        // set the timestamp in the current result
+        on_demand_aggregator::set_current_result(
+            aggregator_object,
+            result,    // result
+            timestamp, // median timestamp
+            timestamp, // min_timestamp
+            timestamp, // max_timestamp
+            result,    // min_result
+            result,    // max_result
+            decimal::zero(), // stdev
+            decimal::zero(), // range
+            result, // mean
+        );
     }
 
     #[test_only]
     public entry fun update_confirmed_timestamp(account: &signer, timestamp: u64) acquires AggregatorRound {
-        borrow_global_mut<AggregatorRound<LatestConfirmedRound>>(signer::address_of(account)).round_confirmed_timestamp = timestamp;
+        let round = borrow_global<AggregatorRound<LatestConfirmedRound>>(signer::address_of(account));
+
+        let aggregator_address = *vector::borrow(round.oracle_keys, 0);
+
+        // Get the aggregator object
+        let aggregator_object = object::address_to_object<OnDemandAggregator>(aggregator_address);
+
+        // get the current result
+        let current_result: CurrentResult = on_demand_aggregator::current_result(aggregator_object);
+
+        // get the current result value
+        let result: Decimal = on_demand_aggregator::result(&current_result);
+
+        // set the timestamp in the current result
+        on_demand_aggregator::set_current_result(
+            aggregator_object,
+            result,    // result
+            timestamp, // median timestamp
+            timestamp, // min_timestamp
+            timestamp, // max_timestamp
+            result,    // min_result
+            result,    // max_result
+            decimal::zero(), // stdev
+            decimal::zero(), // range
+            result, // mean
+        );
     }
 }
