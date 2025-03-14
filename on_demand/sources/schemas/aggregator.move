@@ -562,6 +562,67 @@ module on_demand::aggregator {
     }
 
     #[test_only]
+    public fun new_aggregator_deterministic_address(
+        account: &signer,
+        queue: address,
+        name: String,
+        feed_hash: vector<u8>,
+        min_sample_size: u64,
+        max_staleness_seconds: u64,
+        max_variance: u64,
+        min_responses: u32,
+        seed: vector<u8>,
+    ): address {
+        let created_at = timestamp::now_seconds();
+        let authority = signer::address_of(account);
+        let aggregator = Aggregator {
+            queue,
+            name,
+            authority,
+            feed_hash,
+            min_sample_size,
+            max_staleness_seconds,
+            max_variance,
+            min_responses,
+            created_at,
+            
+        };
+
+        let update_state = UpdateState {
+            results: vector::empty<Update>(),
+            curr_idx: 0,
+        };
+
+        let current_result = CurrentResult {
+            result: decimal::zero(),
+            min_timestamp: 0,
+            max_timestamp: 0,
+            min_result: decimal::zero(),
+            max_result: decimal::zero(),
+            stdev: decimal::zero(),
+            range: decimal::zero(),
+            mean: decimal::zero(),
+            timestamp: 0,
+        };
+
+        // give the authority of the aggregator to the authority
+        let constructor_ref = object::create_named_object(account, seed);
+        let object_signer = object::generate_signer(&constructor_ref);
+
+        // assign the aggregator to the object
+        move_to(&object_signer, aggregator);
+
+        // assign the update state to the object
+        move_to(&object_signer, update_state);
+
+        // assign the current result to the object
+        move_to(&object_signer, current_result);
+
+        // return the address of the aggregator
+        object::address_from_constructor_ref(&constructor_ref)
+    }
+
+    #[test_only]
     public fun new_aggregator(
         account: &signer,
         queue: address,
