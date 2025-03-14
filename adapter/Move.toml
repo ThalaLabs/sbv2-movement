@@ -8,9 +8,6 @@ aptos_framework = '0x1'
 on_demand = "0x465e420630570b780bd8bfc25bfadf444e98594357c488fe397a1142a7b11ffa"
 switchboard = "0xb3654a69ba2a252849a89fa70845ad8e713a28c322dc580ae457df1f747bb74a"
 
-[dev-addresses]
-switchboard = '0x55'
-
 [dependencies]
 MoveStdlib = { git = "https://github.com/aptos-labs/aptos-core.git", subdir = "aptos-move/framework/move-stdlib/", rev = "mainnet" }
 AptosFramework = { git = "https://github.com/aptos-labs/aptos-core.git", subdir = "aptos-move/framework/aptos-framework/", rev = "mainnet" }

@@ -782,7 +782,7 @@ module on_demand::aggregator {
         stdev: Decimal,
         range: Decimal,
         mean: Decimal,
-    ) acquires Aggregator, CurrentResult {
+    ) acquires CurrentResult {
         let aggregator_address = object::object_address(&aggregator);
         let current_result = borrow_global_mut<CurrentResult>(aggregator_address);
         current_result.result = result;
