@@ -181,6 +181,11 @@ module switchboard::aggregator {
      * @return bool - whether the aggregator exists
      */
     public fun exist(addr: address): bool {
+
+        if (!object::is_object(addr)) {
+            addr = object::create_object_address(&addr, b"Aggregator");
+        };
+
         let aggregator: Object<OnDemandAggregator> = object::address_to_object<OnDemandAggregator>(addr);
         on_demand_aggregator::aggregator_exists(aggregator)
     }
@@ -193,6 +198,11 @@ module switchboard::aggregator {
      * @return bool - whether the account has authority
      */
     public fun has_authority(addr: address, account: &signer): bool {
+
+        if (!object::is_object(addr)) {
+            addr = object::create_object_address(&addr, b"Aggregator");
+        };
+
         let aggregator: Object<OnDemandAggregator> = object::address_to_object<OnDemandAggregator>(addr);
 
         // check if the account has authority
@@ -209,6 +219,10 @@ module switchboard::aggregator {
      * @return SwitchboardDecimal - the latest value
      */
     public fun latest_value(addr: address): SwitchboardDecimal {
+        if (!object::is_object(addr)) {
+            addr = object::create_object_address(&addr, b"Aggregator");
+        };
+
         let aggregator: Object<OnDemandAggregator> = object::address_to_object<OnDemandAggregator>(addr);
 
         // Get the latest update info for the feed
@@ -243,6 +257,10 @@ module switchboard::aggregator {
      * @return (SwitchboardDecimal, bool) - the latest value and whether it's within the bounds
      */
     public fun latest_value_in_threshold(addr: address, max_confidence_interval: &SwitchboardDecimal): (SwitchboardDecimal, bool) {
+        
+        if (!object::is_object(addr)) {
+            addr = object::create_object_address(&addr, b"Aggregator");
+        };
 
         let aggregator: Object<OnDemandAggregator> = object::address_to_object<OnDemandAggregator>(addr);
 
@@ -279,6 +297,10 @@ module switchboard::aggregator {
         SwitchboardDecimal, /* Min Oracle Response */
         SwitchboardDecimal, /* Max Oracle Response */
     ) {
+
+        if (!object::is_object(addr)) {
+            addr = object::create_object_address(&addr, b"Aggregator");
+        };
 
         let aggregator: Object<OnDemandAggregator> = object::address_to_object<OnDemandAggregator>(addr);
 
@@ -324,6 +346,9 @@ module switchboard::aggregator {
      * @return address - the authority address
      */
     public fun authority(addr: address): address {
+        if (!object::is_object(addr)) {
+            addr = object::create_object_address(&addr, b"Aggregator");
+        };
         let aggregator: Object<OnDemandAggregator> = object::address_to_object<OnDemandAggregator>(addr);
         let aggregator_value = on_demand_aggregator::get_aggregator(aggregator);
         on_demand_aggregator::authority(&aggregator_value)
@@ -596,13 +621,13 @@ module switchboard::aggregator {
     }
 
     #[test_only]
-    public entry fun new_test(account: &signer, value: u128, dec: u8, neg: bool) acquires AggregatorRound {
+    public entry fun new_test(account: &signer, value: u128, dec: u8, neg: bool) {
 
         // Legacy create aggregator 
         std::timestamp::set_time_has_started_for_testing(account);
 
         // build an on-demand aggregator
-        let aggregator_address = on_demand_aggregator::new_aggregator(
+        let aggregator_address = on_demand_aggregator::new_aggregator_deterministic_address(
             account,
             signer::address_of(account),
             std::string::utf8(b"0x010"),
@@ -611,6 +636,7 @@ module switchboard::aggregator {
             1000000000,
             1000000000,
             1,
+            b"Aggregator",
         );
 
 
@@ -708,10 +734,9 @@ module switchboard::aggregator {
     }
 
     #[test_only]
-    public entry fun update_value(account: &signer, value: u128, dec: u8, neg: bool) acquires AggregatorRound {
-        let round = borrow_global<AggregatorRound<LatestConfirmedRound>>(signer::address_of(account));
+    public entry fun update_value(account: &signer, value: u128, dec: u8, neg: bool) {
 
-        let aggregator_address = *vector::borrow(&round.oracle_keys, 0);
+        let aggregator_address = object::create_object_address(&signer::address_of(account), b"Aggregator");
 
         // Get the aggregator object
         let aggregator_object = object::address_to_object<OnDemandAggregator>(aggregator_address);
@@ -736,10 +761,8 @@ module switchboard::aggregator {
     }
 
     #[test_only]
-    public entry fun update_open_timestamp(account: &signer, timestamp: u64) acquires AggregatorRound {
-        let round = borrow_global<AggregatorRound<LatestConfirmedRound>>(signer::address_of(account));
-
-        let aggregator_address = *vector::borrow(&round.oracle_keys, 0);
+    public entry fun update_open_timestamp(account: &signer, timestamp: u64) {
+        let aggregator_address = object::create_object_address(&signer::address_of(account), b"Aggregator");
 
         // Get the aggregator object
         let aggregator_object = object::address_to_object<OnDemandAggregator>(aggregator_address);
@@ -766,10 +789,8 @@ module switchboard::aggregator {
     }
 
     #[test_only]
-    public entry fun update_confirmed_timestamp(account: &signer, timestamp: u64) acquires AggregatorRound {
-        let round = borrow_global<AggregatorRound<LatestConfirmedRound>>(signer::address_of(account));
-
-        let aggregator_address = *vector::borrow(&round.oracle_keys, 0);
+    public entry fun update_confirmed_timestamp(account: &signer, timestamp: u64) {
+        let aggregator_address = object::create_object_address(&signer::address_of(account), b"Aggregator");
 
         // Get the aggregator object
         let aggregator_object = object::address_to_object<OnDemandAggregator>(aggregator_address);
@@ -796,11 +817,15 @@ module switchboard::aggregator {
     }
 
     #[test(account = @0x1)]
-    public fun test_aggregator(account: signer) acquires AggregatorRound{
+    public fun test_aggregator(account: signer) {
         new_test(&account, 100, 9, false);
-        let round = borrow_global<AggregatorRound<LatestConfirmedRound>>(signer::address_of(&account));
-        let aggregator_address = *vector::borrow(&round.oracle_keys, 0);
-        let value = latest_value(aggregator_address);
+
+        // check latest value
+        let value = latest_value(signer::address_of(&account));
+        assert!(math::equals(&value, &math::new(100, 9, false)), 100);
+
+        // check latest round
+        let (value, timestamp, std_dev, min, max) = latest_round(signer::address_of(&account));
         assert!(math::equals(&value, &math::new(100, 9, false)), 100);
     }
 }
